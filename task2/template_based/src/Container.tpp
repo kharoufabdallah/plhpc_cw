@@ -5,16 +5,21 @@ Container<T>::Container(int capacity) {
     this->capacity = capacity;
     this->first_fill = false;
     this->number_of_elements_inserted = 0;
-    this->CreateContainer();
+    this->CreateContainer(CREATION_t::FIRST);
 }
 template <typename T> 
 Container<T>::~Container() {
-    delete[] this->data;
+    free(this->data); //delete[] this->data;
     this->data = nullptr;
 }
 template <typename T> 
-void Container<T>::CreateContainer() {
-    this->data = new T[this->capacity];
+void Container<T>::CreateContainer(CREATION_t type) {
+    // used malloc in here to reallocate the dynamic array when it's full capacity
+    if (type == CREATION_t::FIRST) 
+        this->data = (T*) malloc(sizeof(T) * this->capacity); // new T[this->capacity];
+    else if (type == CREATION_t::REALLOC)  
+        this->data = (T*) realloc(this->data, sizeof(T) * this->capacity);
+    else exit(99); // assert false;
 };
 template <typename T> 
 void Container<T>::IncrementSize(int how_many) {
@@ -40,8 +45,8 @@ void Container<T>::AddElements(int number, T* number_list) {
         for (int i = 0; i < number; i++) {
             this->data[last_cell_filled+i] = number_list[i];
             first_fill = !first_fill? true : first_fill;
-            this->IncrementSize(number);
         }
+        this->IncrementSize(number);
     } else {
         this->Resize();
         this->AddElements(number, number_list);
@@ -75,6 +80,15 @@ int Container<T>::GetElementFreq(T element){
 template <typename T> 
 void Container<T>::Resize() {
     this->capacity*=2;
-    delete[] this->data;
-    this->CreateContainer();
+    //delete[] this->data;
+    //this->data = new int[this->capacity]; 
+    this->CreateContainer(CREATION_t::REALLOC);
+    //this->CreateContainer();
 }
+template<typename T>
+void Container<T>::PrintContainer() {
+    for (int i = 0; i < this->GetNumberStored(); i++) {
+        std::cout << this->data[i] << "\t"; 
+    }
+    std::cout << std::endl;
+};

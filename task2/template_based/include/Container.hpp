@@ -1,6 +1,7 @@
 #pragma once 
 #include <iostream> 
 
+enum class CREATION_t {FIRST, REALLOC};
 
 template <typename T> 
 class Container {
@@ -15,14 +16,15 @@ public:
     T GetElement(int index);
     void Resize();
     int GetElementFreq(T element);
-        
+    int GetCapacity(); 
+    void PrintContainer();        
 private: 
     int capacity;
     bool first_fill;
     int number_of_elements_inserted;
     T* data;
-    int GetCapacity(); 
-    void CreateContainer();
+    
+    void CreateContainer(CREATION_t type);
     void IncrementSize(int how_many=1);
 };
 #include "../src/Container.tpp"
